@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 11:53:43 2016 Adrien WERY
-** Last update	Sat Mar 19 19:44:12 2016 Adrien WERY
+** Last update	Mon Mar 21 17:08:48 2016 Adrien WERY
 */
 
 # include "lemipc-graphic.h"
@@ -13,9 +13,9 @@
 SDL_Window      *win;
 SDL_Renderer    *render;
 
-bool    init()
+bool    initSDL()
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (!SDL_Init(SDL_INIT_VIDEO))
         return (false);
     if (!(win = SDL_CreateWindow("LemIPC", SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, WIDTH * STEP, HEIGHT * STEP, SDL_WINDOW_SHOWN)))
@@ -34,15 +34,17 @@ void    destroy()
     SDL_Quit();
 }
 
+
 t_map       *getMap(int semkey)
 {
     int     memID;
     void    *ptr;
 
-    if ((memID = shmget(semkey, sizeof(t_map) * WIDTH * HEIGHT, 0444 | IPC_CREAT)) < 0)
+    if ((memID = shmget(semkey, sizeof(t_map) * WIDTH * HEIGHT, 0444)) < 0)
         return (NULL);
     if ((ptr = shmat(memID, NULL, 0)) == (void*) -1)
         return (NULL);
+    shmctl(memID, IPC_RMID, NULL);
     return (ptr);
 }
 
@@ -96,11 +98,10 @@ int     main(int ac, char **av)
     }
     if ((semkey = ftok(av[1], KEY_C)) == (key_t) -1)
         return (1);
-    if (!(init()))
+    if (!(initSDL()))
         return (1);
     if (!(map = getMap(semkey)))
         return (1);
     run(render, map);
-    shmdt(map);
     destroy();
 }

@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 12:42:51 2016 Adrien WERY
-** Last update	Sat Mar 19 19:55:14 2016 Adrien WERY
+** Last update	Mon Mar 21 17:00:23 2016 Adrien WERY
 */
 
 # include "lemipc.h"
@@ -26,13 +26,13 @@ bool    dead(t_map *map, int pos, int team)
     teams[3] = (posH == HEIGHT - 1) ? 0 : map[pos + HEIGHT].nteam;
     teams[4] = (posW == 0 || posH == 0) ? 0 : map[pos - 1 - HEIGHT].nteam;
     teams[5] = (posW == WIDTH - 1 || posH == 0) ? 0 : map[pos + 1 - HEIGHT].nteam;
-    teams[4] = (posW == 0 || posH == HEIGHT - 1) ? 0 : map[pos - 1 + HEIGHT].nteam;
-    teams[5] = (posW == WIDTH - 1 || posH == HEIGHT - 1) ? 0 : map[pos + 1 + HEIGHT].nteam;
+    teams[6] = (posW == 0 || posH == HEIGHT - 1) ? 0 : map[pos - 1 + HEIGHT].nteam;
+    teams[7] = (posW == WIDTH - 1 || posH == HEIGHT - 1) ? 0 : map[pos + 1 + HEIGHT].nteam;
     i = -1;
-    while (++i)
+    while (++i < 8)
     {
         j = i;
-        while (++j)
+        while (++j < 8)
         {
             if (team != teams[i] && teams[i] == teams[j])
                 return (true);
@@ -64,8 +64,8 @@ int         run(t_map *map, int team, bool first)
 
 t_map       *init(char *path, bool *first)
 {
-    t_map   *map;
     key_t   semkey;
+    t_map   *map;
 
     if ((semkey = ftok(path, KEY_C)) == (key_t) -1)
         return (NULL);
@@ -122,5 +122,4 @@ int     main(int ac, char **av)
         if (first)
             end(map, winner);
     }
-    shmdt(map);
 }

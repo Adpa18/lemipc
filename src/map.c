@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 19:32:39 2016 Adrien WERY
-** Last update	Sat Mar 19 19:46:09 2016 Adrien WERY
+** Last update	Mon Mar 21 17:00:30 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -42,6 +42,7 @@ t_map       *getMap(int semkey)
         return (NULL);
     if ((ptr = shmat(memID, NULL, 0)) == (void*) -1)
         return (NULL);
+    shmctl(memID, IPC_RMID, NULL);
     return (ptr);
 }
 

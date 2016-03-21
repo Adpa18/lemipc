@@ -11,8 +11,8 @@
 # include <stdio.h>
 
 # define KEY_C  'A'
-# define WIDTH  2
-# define HEIGHT 2
+# define WIDTH  10
+# define HEIGHT 10
 # define USAGE  "./lemipc PATH TEAM_NUMBER\n"
 
 typedef enum { false, true } bool;
