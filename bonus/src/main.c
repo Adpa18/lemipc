@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 11:53:43 2016 Adrien WERY
-** Last update	Mon Mar 21 17:08:48 2016 Adrien WERY
+** Last update	Tue Mar 22 21:56:29 2016 Adrien WERY
 */
 
 # include "lemipc-graphic.h"
@@ -15,7 +15,7 @@ SDL_Renderer    *render;
 
 bool    initSDL()
 {
-    if (!SDL_Init(SDL_INIT_VIDEO))
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
         return (false);
     if (!(win = SDL_CreateWindow("LemIPC", SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, WIDTH * STEP, HEIGHT * STEP, SDL_WINDOW_SHOWN)))
@@ -35,20 +35,21 @@ void    destroy()
 }
 
 
-t_map       *getMap(int semkey)
+void        *getMap(char *path, int *memID)
 {
-    int     memID;
+    key_t   semkey;
     void    *ptr;
 
-    if ((memID = shmget(semkey, sizeof(t_map) * WIDTH * HEIGHT, 0444)) < 0)
+    if ((semkey = ftok(path, KEY)) == (key_t) -1)
         return (NULL);
-    if ((ptr = shmat(memID, NULL, 0)) == (void*) -1)
+    if ((*memID = shmget(semkey, SIZE, IPC_CREAT | SHM_R | SHM_W)) < 0)
         return (NULL);
-    shmctl(memID, IPC_RMID, NULL);
+    if ((ptr = shmat(*memID, NULL, 0)) == (void*) -1)
+        return (NULL);
     return (ptr);
 }
 
-void    run(SDL_Renderer *render, t_map *map)
+void    run(SDL_Renderer *render, char *map)
 {
     SDL_Event       event;
     bool            alive;
@@ -69,39 +70,38 @@ void    run(SDL_Renderer *render, t_map *map)
         SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
         SDL_RenderClear(render);
         i = -1;
-        while (++i < WIDTH * HEIGHT)
+        while (++i < HEIGHT * WIDTH)
         {
-            if (map[i].nteam != 0)
+            if (map[i] != 0)
             {
-                rect.x = map[i].x * STEP;
-                rect.y = map[i].y * STEP;
-                SDL_SetRenderDrawColor(render, ((colors[map[i].nteam - 1] >> 16) & 255),
-                ((colors[map[i].nteam - 1] >> 8) & 255), ((colors[map[i].nteam - 1]) & 255),
-                ((colors[map[i].nteam - 1] >> 24) & 255));
+                rect.y = i / HEIGHT * STEP;
+                rect.x = i % WIDTH * STEP;
+                SDL_SetRenderDrawColor(render, ((colors[map[i] - 1] >> 16) & 255),
+                    ((colors[map[i] - 1] >> 8) & 255), ((colors[map[i] - 1]) & 255),
+                    ((colors[map[i] - 1] >> 24) & 255));
                 SDL_RenderFillRect(render, &rect);
             }
         }
         SDL_RenderPresent(render);
-        usleep(1000);
+        usleep(10000);
     }
 }
 
 int     main(int ac, char **av)
 {
-    t_map   *map;
-    key_t   semkey;
+    char    *map;
+    int     memID;
 
     if (ac != 2)
     {
         write(1, "./lemipc-graphic PATH\n", 22);
         return (0);
     }
-    if ((semkey = ftok(av[1], KEY_C)) == (key_t) -1)
-        return (1);
     if (!(initSDL()))
         return (1);
-    if (!(map = getMap(semkey)))
+    if (!(map = getMap(av[1], &memID)))
         return (1);
     run(render, map);
     destroy();
+    shmctl(memID, IPC_RMID, NULL);
 }

@@ -5,93 +5,82 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 12:42:51 2016 Adrien WERY
-** Last update	Mon Mar 21 17:00:23 2016 Adrien WERY
+** Last update	Tue Mar 22 21:57:53 2016 Adrien WERY
 */
 
-# include "lemipc.h"
+#include "lemipc.h"
 
-bool    dead(t_map *map, int pos, int team)
+void    move(t_player *p)
+{
+    p->map[getPos(p->y, p->x)] = 0;
+    if (p->map[getPos(p->y - 1, p->x)] == 0 && p->y > HEIGHT / 2)
+        --p->y;
+    else if (p->map[getPos(p->y + 1, p->x)] == 0 && p->y < HEIGHT / 2)
+        ++p->y;
+    else if (p->map[getPos(p->y, p->x - 1)] == 0 && p->x > WIDTH / 2)
+        --p->x;
+    else if (p->map[getPos(p->y, p->x + 1)] == 0 && p->x < WIDTH / 2)
+        ++p->x;
+    p->map[getPos(p->y, p->x)] = p->nteam;
+}
+
+bool    is_dead(t_player *p)
 {
     int     teams[8];
     int	    i;
     int     j;
-    int     posW;
-    int     posH;
 
-    posW = pos % WIDTH;
-    posH = pos / HEIGHT;
-    teams[0] = (posW == 0) ? 0 : map[pos - 1].nteam;
-    teams[1] = (posW == WIDTH - 1) ? 0 : map[pos + 1].nteam;
-    teams[2] = (posH == 0) ? 0 : map[pos - HEIGHT].nteam;
-    teams[3] = (posH == HEIGHT - 1) ? 0 : map[pos + HEIGHT].nteam;
-    teams[4] = (posW == 0 || posH == 0) ? 0 : map[pos - 1 - HEIGHT].nteam;
-    teams[5] = (posW == WIDTH - 1 || posH == 0) ? 0 : map[pos + 1 - HEIGHT].nteam;
-    teams[6] = (posW == 0 || posH == HEIGHT - 1) ? 0 : map[pos - 1 + HEIGHT].nteam;
-    teams[7] = (posW == WIDTH - 1 || posH == HEIGHT - 1) ? 0 : map[pos + 1 + HEIGHT].nteam;
+    teams[0] = (p->x == 0) ? 0 : p->map[getPos(p->y, p->x - 1)];
+    teams[1] = (p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y, p->x + 1)];
+    teams[2] = (p->y == 0) ? 0 : p->map[getPos(p->y - 1, p->x)];
+    teams[3] = (p->y == HEIGHT - 1) ? 0 : p->map[getPos(p->y + 1, p->x)];
+
+    teams[4] = (p->y == 0 || p->x == 0) ? 0 : p->map[getPos(p->y - 1, p->x - 1)];
+    teams[5] = (p->y == 0 || p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y - 1, p->x + 1)];
+    teams[6] = (p->y == HEIGHT - 1 || p->x == 0) ? 0 : p->map[getPos(p->y + 1, p->x - 1)];
+    teams[7] = (p->y == HEIGHT - 1 || p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y + 1, p->x + 1)];
     i = -1;
     while (++i < 8)
     {
         j = i;
         while (++j < 8)
         {
-            if (team != teams[i] && teams[i] == teams[j])
+            if (teams[i] != 0 && teams[j] != 0 &&
+                p->nteam != teams[i] && teams[i] == teams[j])
                 return (true);
         }
     }
     return (false);
 }
 
-int         run(t_map *map, int team, bool first)
+int         run(t_player *p)
 {
-    size_t  pos;
-    int     winner;
+    int         winner;
+    struct sembuf   sops;
 
-    pos = rand() % (WIDTH * HEIGHT);
-    while (map[pos].nteam != 0)
-        pos = rand() % (WIDTH * HEIGHT);
-    map[pos].nteam = team;
+    winner = 0;
+    sops.sem_num = 0;
+    sops.sem_flg = 0;
     while (42)
     {
-        if (dead(map, pos, team))
+        sops.sem_op = -1;
+        semop(p->semID, &sops, 1);
+        if (is_dead(p))
             break;
-        if (first && (winner = display(map)) != 0)
+        move(p);
+        if (p->first && (winner = display(p->map)) != 0)
             return (winner);
-        sleep(1);
+        usleep(10000);
+        sops.sem_op = 1;
+        semop(p->semID, &sops, 1);
     }
-    map[pos].nteam = 0;
+    p->map[getPos(p->y, p->x)] = 0;
     return (winner);
 }
 
-t_map       *init(char *path, bool *first)
+void    end(void *map, int winner)
 {
-    key_t   semkey;
-    t_map   *map;
-
-    if ((semkey = ftok(path, KEY_C)) == (key_t) -1)
-        return (NULL);
-    if (!(map = getMap(semkey)))
-        return (NULL);
-    srand(time(NULL));
-    *first = false;
-    if (map[1].x != 1)
-    {
-        *first = true;
-        initMap(map);
-    }
-    return (map);
-}
-
-void    end(t_map *map, int winner)
-{
-    int i;
-
-    i = -1;
-    while (++i < WIDTH * HEIGHT)
-    {
-        map[i].x = 0;
-        map[i].y = 0;
-        map[i].nteam = 0;
-    }
+    memset(map, 0, SIZE);
     while (winner == 0)
     {
         winner = display(map);
@@ -102,24 +91,22 @@ void    end(t_map *map, int winner)
     write(1, "\n", 1);
 }
 
+
 int     main(int ac, char **av)
 {
-    t_map   *map;
-    bool    first;
-    int     winner;
+    t_player    p;
+    int         winner;
 
     if (ac != 3)
     {
         write(1, USAGE, strlen(USAGE));
         return (0);
     }
-    if (!(map = init(av[1], &first)))
+    if (!init(av[1], &p, atoi(av[2])))
         return (1);
-    if (atoi(av[2]) == 0) {
-        end(map, (winner = 1));
-    } else {
-        winner = run(map, atoi(av[2]), first);
-        if (first)
-            end(map, winner);
-    }
+    winner = run(&p);
+    if (p.first)
+        end(p.map, winner);
+    shmdt(p.map);
+    shmctl(p.shmID, IPC_RMID, NULL);
 }

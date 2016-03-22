@@ -5,6 +5,7 @@ RM		=	rm -rf
 SRC_DIR	=	src/
 
 SRC		= 	$(SRC_DIR)main.c	\
+			$(SRC_DIR)init.c	\
 			$(SRC_DIR)map.c		\
 
 OBJ		= 	$(SRC:.c=.o)
@@ -13,7 +14,7 @@ NAME	=	lemipc
 
 CFLAGS	=	-I./inc -I./
 
-CFLAGS	+=	-W -Wall -Werror
+CFLAGS	+=	-W -Wall -Werror -g
 
 $(NAME)	:	$(OBJ)
 		$(CC) -o $(NAME) $(OBJ)

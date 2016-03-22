@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 19:32:39 2016 Adrien WERY
-** Last update	Mon Mar 21 17:00:30 2016 Adrien WERY
+** Last update	Tue Mar 22 18:24:16 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -20,53 +20,36 @@ void	my_putnbr(int nb)
     write(1, &c, 1);
 }
 
-void    initMap(t_map *map)
+inline int   getPos(int y, int x)
 {
-    int i;
-
-    i = -1;
-    while (++i < WIDTH * HEIGHT)
-    {
-        map[i].x = i % WIDTH;
-        map[i].y = i / HEIGHT;
-        map[i].nteam = 0;
-    }
+    return (y * WIDTH + x);
 }
 
-t_map       *getMap(int semkey)
+int         display(char *map)
 {
-    int     memID;
-    void    *ptr;
-
-    if ((memID = shmget(semkey, sizeof(t_map) * WIDTH * HEIGHT, 0666 | IPC_CREAT)) < 0)
-        return (NULL);
-    if ((ptr = shmat(memID, NULL, 0)) == (void*) -1)
-        return (NULL);
-    shmctl(memID, IPC_RMID, NULL);
-    return (ptr);
-}
-
-int         display(t_map *map)
-{
+    static bool     started = false;
     bool    go;
     int     i;
-    int     j;
+    int     k;
 
-    i = -1;
-    j = 0;
     go = false;
     write(1, "\n====MAP====\n", 13);
-    while (++i < WIDTH * HEIGHT)
+    i = -1;
+    k = 0;
+    while (++i < HEIGHT * WIDTH)
     {
-        if (j != 0 && j != map[i].nteam)
+        if (k != 0 && k != map[i])
+        {
+            started = true;
             go = true;
+        }
         else
-            j = map[i].nteam;
-        my_putnbr(map[i].nteam);
+            k = map[i];
+        my_putnbr(map[i]);
         if (i % WIDTH == WIDTH - 1)
             write(1, "\n", 1);
     }
-    if (go)
+    if (!started || go)
         return (0);
-    return (j);
+    return (k);
 }
