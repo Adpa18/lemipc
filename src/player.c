@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Wed Mar 23 17:19:57 2016 Adrien WERY
-** Last update	Wed Mar 23 17:34:16 2016 Adrien WERY
+** Last update	Wed Mar 23 18:54:43 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -37,6 +37,35 @@ inline bool     alone(t_player *p)
          }
      }
      return (start);
+}
+
+inline bool    is_dead(t_player *p)
+{
+    int     teams[8];
+    int	    i;
+    int     j;
+
+    teams[0] = (p->x == 0) ? 0 : p->map[getPos(p->y, p->x - 1)];
+    teams[1] = (p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y, p->x + 1)];
+    teams[2] = (p->y == 0) ? 0 : p->map[getPos(p->y - 1, p->x)];
+    teams[3] = (p->y == HEIGHT - 1) ? 0 : p->map[getPos(p->y + 1, p->x)];
+
+    teams[4] = (p->y == 0 || p->x == 0) ? 0 : p->map[getPos(p->y - 1, p->x - 1)];
+    teams[5] = (p->y == 0 || p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y - 1, p->x + 1)];
+    teams[6] = (p->y == HEIGHT - 1 || p->x == 0) ? 0 : p->map[getPos(p->y + 1, p->x - 1)];
+    teams[7] = (p->y == HEIGHT - 1 || p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y + 1, p->x + 1)];
+    i = -1;
+    while (++i < 8)
+    {
+        j = i;
+        while (++j < 8)
+        {
+            if (teams[i] != 0 && teams[j] != 0 &&
+                p->nteam != teams[i] && teams[i] == teams[j])
+                return (true);
+        }
+    }
+    return (false);
 }
 
 inline int  count(t_player *p)

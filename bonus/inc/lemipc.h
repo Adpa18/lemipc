@@ -15,6 +15,7 @@
 # define KEY    42
 # define WIDTH  100
 # define HEIGHT 100
+# define SLEEP  10000
 # define SIZE   sizeof(char) * WIDTH * HEIGHT
 # define USAGE  "./lemipc PATH TEAM_NUMBER\n"
 
@@ -51,22 +52,22 @@ struct  s_case
 
 typedef     struct s_msg
 {
-    long    mtype;
-    int     pos;
+    long    team;
+    char    pos;
     // int     nb;
-    // MoveType    mt;
-
 }           t_msg;
 
 void    my_putnbr(int nb);
 int     display(char *map);
 bool    init(char *path, t_player *p, int team);
-void    move(t_player *p, struct sembuf *sops);
+void    movePos(t_player *p, int posTo);
+int     moveMsg(t_player *p);
 
 bool    isEnnemy(int ennemy, int team);
 int     getPos(int y, int x);
-bool    alone(t_player *p);
 int     count(t_player *p);
+bool    is_dead(t_player *p);
+bool    alone(t_player *p);
 
 
 #endif

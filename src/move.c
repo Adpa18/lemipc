@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Wed Mar 23 11:31:53 2016 Adrien WERY
-** Last update	Wed Mar 23 17:30:53 2016 Adrien WERY
+** Last update	Wed Mar 23 19:06:51 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -50,41 +50,53 @@ int         attack(t_player *p, int len)
 
 int         moveMsg(t_player *p)
 {
-    t_msg    msgR;
-    t_msg    msgS;
-    int     nb;
+    t_msg   msg;
+    char    nb;
 
-    msgS.mtype = p->nteam;
-    msgS.pos = getPos(p->y, p->x);
-    // msgS.mt = GROUP;
-
-    if (msgrcv(p->msgID, &msgR, sizeof(t_msg), p->nteam, MSG_NOERROR | IPC_NOWAIT) == -1)
+    msg.team = 0;
+    if (msgrcv(p->msgID, &msg, sizeof(t_msg), p->nteam, MSG_NOERROR | IPC_NOWAIT) == -1)
     {
+        msg.team = p->nteam;
+        msg.pos = getPos(p->y, p->x);
         nb = count(p);
         while (--nb)
         {
-            if (msgsnd(p->msgID, &msgS, sizeof(t_msg), 0) == -1)
-                perror("msgsnd");
+            msgsnd(p->msgID, &msg, sizeof(t_msg), 0);
+            // if (msgsnd(p->msgID, &msg, sizeof(t_msg), 0) == -1)
+            // perror("msgsnd1");
         }
         return (attack(p, 3));
     }
-    return (msgR.pos);
+    // if (msg.team == p->nteam && --msg.nb)
+    // {
+    //     if (msgsnd(p->msgID, &msg, sizeof(t_msg), 0) == -1)
+    //     perror("msgsnd2");
+    // }
+    return (msg.pos);
 }
 
 void    movePos(t_player *p, int posTo)
 {
     int y = posTo / HEIGHT;
     int x = posTo % WIDTH;
+    bool    moved;
 
+    moved = false;
     p->map[getPos(p->y, p->x)] = 0;
     if (abs(p->y - y) > abs(p->x - x))
     {
         if (p->map[getPos(p->y - 1, p->x)] == 0 && p->y > y)
+        {
             --p->y;
+            moved = true;
+        }
         else if (p->map[getPos(p->y + 1, p->x)] == 0 && p->y < y)
+        {
             ++p->y;
+            moved = true;
+        }
     }
-    else
+    if (!moved)
     {
         if (p->map[getPos(p->y, p->x - 1)] == 0 && p->x > x)
             --p->x;
@@ -92,14 +104,4 @@ void    movePos(t_player *p, int posTo)
             ++p->x;
     }
     p->map[getPos(p->y, p->x)] = p->nteam;
-}
-
-void    move(t_player *p, struct sembuf *sops)
-{
-    sops->sem_op = -1;
-    semop(p->semID, sops, 1);
-    usleep(10000);
-    movePos(p, moveMsg(p));
-    sops->sem_op = 1;
-    semop(p->semID, sops, 1);
 }

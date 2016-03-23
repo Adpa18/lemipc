@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 11:55:38 2016 Adrien WERY
-** Last update	Tue Mar 22 21:49:24 2016 Adrien WERY
+** Last update	Wed Mar 23 18:57:23 2016 Adrien WERY
 */
 
 #ifndef LEMIPC_GRAPHIC_H_

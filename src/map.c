@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 19:32:39 2016 Adrien WERY
-** Last update	Wed Mar 23 17:22:05 2016 Adrien WERY
+** Last update	Wed Mar 23 18:36:49 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -22,7 +22,6 @@ void	my_putnbr(int nb)
 
 int         display(char *map)
 {
-    static bool     started = false;
     bool    go;
     int     i;
     int     k;
@@ -33,18 +32,17 @@ int         display(char *map)
     k = 0;
     while (++i < HEIGHT * WIDTH)
     {
-        if (k != 0 && k != map[i])
+        if (map[i] != 0)
         {
-            started = true;
-            go = true;
-        }
-        else
+            if (k != 0 && k != map[i])
+                go = true;
             k = map[i];
+        }
         my_putnbr(map[i]);
         if (i % WIDTH == WIDTH - 1)
             write(1, "\n", 1);
     }
-    if (!started || go)
-        return (0);
+    if (go)
+        return (-1);
     return (k);
 }

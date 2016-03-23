@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Tue Mar 22 17:31:26 2016 Adrien WERY
-** Last update	Wed Mar 23 17:22:08 2016 Adrien WERY
+** Last update	Wed Mar 23 18:31:18 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -36,7 +36,7 @@ bool        init_pos(t_player *p, int team)
 bool        init_first(key_t key, t_player *p)
 {
     p->first = true;
-    if (((p->shmID = shmget(key, SIZE, SHM_R | SHM_W | IPC_CREAT)) < 0))
+    if (((p->shmID = shmget(key, SIZE, IPC_CREAT | SHM_R | SHM_W)) < 0))
         return (false);
     if ((p->map = shmat(p->shmID, NULL, 0)) == (void*) -1)
         return (false);
