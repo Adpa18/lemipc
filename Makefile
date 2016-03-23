@@ -7,6 +7,8 @@ SRC_DIR	=	src/
 SRC		= 	$(SRC_DIR)main.c	\
 			$(SRC_DIR)init.c	\
 			$(SRC_DIR)map.c		\
+			$(SRC_DIR)move.c	\
+			$(SRC_DIR)player.c	\
 
 OBJ		= 	$(SRC:.c=.o)
 

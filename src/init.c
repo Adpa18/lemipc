@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Tue Mar 22 17:31:26 2016 Adrien WERY
-** Last update	Tue Mar 22 18:42:07 2016 Adrien WERY
+** Last update	Wed Mar 23 17:22:08 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -42,6 +42,8 @@ bool        init_first(key_t key, t_player *p)
         return (false);
     if ((p->semID = semget(key, 1, IPC_CREAT | SHM_R | SHM_W)) < 0)
         return (false);
+    if ((p->msgID = msgget(key, IPC_CREAT | SHM_R | SHM_W)) < 0)
+        return (false);
     memset(p->map, 0, SIZE);
     semctl(p->semID, 0, SETVAL, 1);
     return (true);
@@ -63,7 +65,9 @@ bool        init(char *path, t_player *p, int team)
         p->first = false;
         if ((p->map = shmat(p->shmID, NULL, 0)) == (void*) -1)
             return (false);
-        if ((p->semID = semget(key, 1, IPC_CREAT | SHM_R | SHM_W)) < 0)
+        if ((p->semID = semget(key, 1, SHM_R | SHM_W)) < 0)
+            return (false);
+        if ((p->msgID = msgget(key, SHM_R | SHM_W)) < 0)
             return (false);
     }
     if (!init_pos(p, team))

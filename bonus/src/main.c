@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 11:53:43 2016 Adrien WERY
-** Last update	Wed Mar 23 10:35:08 2016 Nicolas Constanty
+** Last update	Wed Mar 23 13:44:09 2016 Adrien WERY
 */
 
 # include "lemipc-graphic.h"
@@ -35,17 +35,22 @@ void    destroy()
 }
 
 
-void        *getMap(char *path, int *memID)
+void        *getMap(char *path, int *shmID, int *semID, int *msgID)
 {
-    key_t   semkey;
+    key_t   key;
     void    *ptr;
 
-    if ((semkey = ftok(path, KEY)) == (key_t) -1)
+    if ((key = ftok(path, KEY)) == (key_t) -1)
         return (NULL);
-    if ((*memID = shmget(semkey, SIZE, IPC_CREAT | SHM_R | SHM_W)) < 0)
+    if ((*shmID = shmget(key, SIZE, IPC_CREAT | SHM_R | SHM_W)) < 0)
         return (NULL);
-    if ((ptr = shmat(*memID, NULL, 0)) == (void*) -1)
+    if ((ptr = shmat(*shmID, NULL, 0)) == (void*) -1)
         return (NULL);
+    if ((*semID = semget(key, 1, IPC_CREAT | SHM_R | SHM_W)) < 0)
+        return (NULL);
+    if ((*msgID = msgget(key, IPC_CREAT | SHM_R | SHM_W)) < 0)
+        return (NULL);
+    semctl(*semID, 0, SETVAL, 1);
     return (ptr);
 }
 
@@ -83,14 +88,16 @@ void    run(SDL_Renderer *render, char *map)
             }
         }
         SDL_RenderPresent(render);
-        usleep(10000);
+        usleep(1000);
     }
 }
 
 int     main(int ac, char **av)
 {
     char    *map;
-    int     memID;
+    int     shmID;
+    int     semID;
+    int     msgID;
 
     if (ac != 2)
     {
@@ -99,10 +106,12 @@ int     main(int ac, char **av)
     }
     if (!(initSDL()))
         return (1);
-    if (!(map = getMap(av[1], &memID)))
+    if (!(map = getMap(av[1], &shmID, &semID, &msgID)))
         return (1);
     run(render, map);
     destroy();
-    shmctl(memID, IPC_RMID, NULL);
+    shmctl(shmID, IPC_RMID, NULL);
+    semctl(semID, 0, IPC_RMID);
+    msgctl(msgID, IPC_RMID, NULL);
     return (0);
 }

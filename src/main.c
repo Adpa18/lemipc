@@ -5,24 +5,10 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 12:42:51 2016 Adrien WERY
-** Last update	Wed Mar 23 10:34:00 2016 Nicolas Constanty
+** Last update	Wed Mar 23 17:33:24 2016 Adrien WERY
 */
 
 #include "lemipc.h"
-
-void    move(t_player *p)
-{
-    p->map[getPos(p->y, p->x)] = 0;
-    if (p->map[getPos(p->y - 1, p->x)] == 0 && p->y > HEIGHT / 2)
-        --p->y;
-    else if (p->map[getPos(p->y + 1, p->x)] == 0 && p->y < HEIGHT / 2)
-        ++p->y;
-    else if (p->map[getPos(p->y, p->x - 1)] == 0 && p->x > WIDTH / 2)
-        --p->x;
-    else if (p->map[getPos(p->y, p->x + 1)] == 0 && p->x < WIDTH / 2)
-        ++p->x;
-    p->map[getPos(p->y, p->x)] = p->nteam;
-}
 
 bool    is_dead(t_player *p)
 {
@@ -63,16 +49,11 @@ int         run(t_player *p)
     sops.sem_flg = 0;
     while (42)
     {
-        sops.sem_op = -1;
-        semop(p->semID, &sops, 1);
-        if (is_dead(p))
+        if (is_dead(p) || alone(p))
             break;
-        move(p);
+        move(p, &sops);
         if (p->first && (winner = display(p->map)) != 0)
             return (winner);
-        usleep(10000);
-        sops.sem_op = 1;
-        semop(p->semID, &sops, 1);
     }
     p->map[getPos(p->y, p->x)] = 0;
     return (winner);
@@ -109,5 +90,6 @@ int     main(int ac, char **av)
         end(p.map, winner);
     shmdt(p.map);
     shmctl(p.shmID, IPC_RMID, NULL);
-    return (0);
+    semctl(p.semID, 0, IPC_RMID);
+    msgctl(p.msgID, IPC_RMID, NULL);
 }

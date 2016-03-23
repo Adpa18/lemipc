@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 19:32:39 2016 Adrien WERY
-** Last update	Tue Mar 22 18:24:16 2016 Adrien WERY
+** Last update	Wed Mar 23 17:22:05 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -18,11 +18,6 @@ void	my_putnbr(int nb)
         my_putnbr(nb / 10);
     c = nb % 10 + 48;
     write(1, &c, 1);
-}
-
-inline int   getPos(int y, int x)
-{
-    return (y * WIDTH + x);
 }
 
 int         display(char *map)

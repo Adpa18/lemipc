@@ -29,6 +29,12 @@ enum Colors {
     CYAN,
     WHITE
 };
+
+typedef enum {
+    ATTACK,
+    GROUP
+} MoveType;
+
 typedef struct s_case t_player;
 
 struct  s_case
@@ -47,13 +53,20 @@ typedef     struct s_msg
 {
     long    mtype;
     int     pos;
+    // int     nb;
+    // MoveType    mt;
 
 }           t_msg;
 
 void    my_putnbr(int nb);
-int     getPos(int y, int x);
 int     display(char *map);
 bool    init(char *path, t_player *p, int team);
+void    move(t_player *p, struct sembuf *sops);
+
+bool    isEnnemy(int ennemy, int team);
+int     getPos(int y, int x);
+bool    alone(t_player *p);
+int     count(t_player *p);
 
 
 #endif
