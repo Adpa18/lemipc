@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 11:53:43 2016 Adrien WERY
-** Last update	Tue Mar 22 21:56:29 2016 Adrien WERY
+** Last update	Wed Mar 23 10:35:08 2016 Nicolas Constanty
 */
 
 # include "lemipc-graphic.h"
@@ -104,4 +104,5 @@ int     main(int ac, char **av)
     run(render, map);
     destroy();
     shmctl(memID, IPC_RMID, NULL);
+    return (0);
 }

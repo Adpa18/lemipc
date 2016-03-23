@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 12:42:51 2016 Adrien WERY
-** Last update	Tue Mar 22 21:57:53 2016 Adrien WERY
+** Last update	Wed Mar 23 10:34:00 2016 Nicolas Constanty
 */
 
 #include "lemipc.h"
@@ -109,4 +109,5 @@ int     main(int ac, char **av)
         end(p.map, winner);
     shmdt(p.map);
     shmctl(p.shmID, IPC_RMID, NULL);
+    return (0);
 }
