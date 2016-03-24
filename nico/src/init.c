@@ -5,12 +5,12 @@
 ** Login	wery_a
 **
 ** Started on	Tue Mar 22 17:31:26 2016 Adrien WERY
-** Last update	Thu Mar 24 04:58:29 2016 Nicolas Constanty
+** Last update	Thu Mar 24 22:40:11 2016 Nicolas Constanty
 */
 
 #include "lemipc.h"
 
-bool        init_pos(t_player *p, int team)
+bool	init_pos(t_player *p, int team)
 {
     int     i;
 
@@ -33,7 +33,7 @@ bool        init_pos(t_player *p, int team)
     return (true);
 }
 
-bool        init_first(key_t key, t_player *p)
+bool	init_first(key_t key, t_player *p)
 {
     p->first = true;
     if (((p->shmID = shmget(key, SIZE, SHM_R | SHM_W | IPC_CREAT)) < 0))
@@ -49,7 +49,7 @@ bool        init_first(key_t key, t_player *p)
     return (true);
 }
 
-bool        init(char *path, t_player *p, int team)
+bool	init(char *path, t_player *p, int team)
 {
     key_t   key;
 

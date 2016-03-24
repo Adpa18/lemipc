@@ -59,11 +59,16 @@ typedef     struct s_msg
 
 }           t_msg;
 
+
 void    my_putnbr(int nb);
 int     display(char *map);
 bool    init(char *path, t_player *p, int team);
 void    move(t_player *p, struct sembuf *sops);
 
+void		movePos(t_player *p, int posTo);
+int			avoid(t_player *p);
+int			attack(t_player *p, int len);
+int			checkChance(t_player *p, int len, int nb_e, int nb_a);
 bool    isEnnemy(int ennemy, int team);
 int     getPos(int y, int x);
 bool    alone(t_player *p);

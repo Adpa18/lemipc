@@ -5,24 +5,24 @@
 ** Login	wery_a
 **
 ** Started on	Wed Mar 23 17:19:57 2016 Adrien WERY
-** Last update	Thu Mar 24 02:57:56 2016 Nicolas Constanty
+** Last update	Thu Mar 24 21:18:06 2016 Nicolas Constanty
 */
 
 #include "lemipc.h"
 
-inline int   getPos(int y, int x)
+inline int	getPos(int y, int x)
 {
     if (y < 0 || y >= HEIGHT || x < 0 || x >= WIDTH)
         return (-1);
     return (y * WIDTH + x);
 }
 
-inline bool isEnnemy(int ennemy, int team)
+inline bool	isEnnemy(int ennemy, int team)
 {
     return (ennemy != 0 && ennemy != team);
 }
 
-inline bool     alone(t_player *p)
+inline bool	alone(t_player *p)
 {
     static bool start = false;
     int     i;
@@ -39,7 +39,7 @@ inline bool     alone(t_player *p)
      return (start);
 }
 
-inline int  count(t_player *p)
+inline int	count(t_player *p)
 {
     int     i;
     int     nb;

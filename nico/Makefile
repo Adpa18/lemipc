@@ -8,13 +8,14 @@ SRC		= 	$(SRC_DIR)main.c	\
 			$(SRC_DIR)init.c	\
 			$(SRC_DIR)map.c		\
 			$(SRC_DIR)move.c	\
+			$(SRC_DIR)move_to.c	\
 			$(SRC_DIR)player.c	\
 
 OBJ		= 	$(SRC:.c=.o)
 
 NAME	=	lemipc
 
-CFLAGS	=	-g -I./inc -I./
+CFLAGS	=	-O2 -I./inc -I./
 
 CFLAGS	+=	-W -Wall -Werror -g
 

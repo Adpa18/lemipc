@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 19:32:39 2016 Adrien WERY
-** Last update	Wed Mar 23 17:22:05 2016 Adrien WERY
+** Last update	Thu Mar 24 22:40:27 2016 Nicolas Constanty
 */
 
 #include "lemipc.h"
@@ -20,7 +20,7 @@ void	my_putnbr(int nb)
     write(1, &c, 1);
 }
 
-int         display(char *map)
+int	display(char *map)
 {
     static bool     started = false;
     bool    go;

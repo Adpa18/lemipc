@@ -5,41 +5,41 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 12:42:51 2016 Adrien WERY
-** Last update	Thu Mar 24 02:28:58 2016 Nicolas Constanty
+** Last update	Thu Mar 24 22:49:57 2016 Nicolas Constanty
 */
 
 #include "lemipc.h"
 
-bool    is_dead(t_player *p)
+bool	is_dead(t_player *p)
 {
     int     teams[8];
-    int	    i;
-    int     j;
+    int	    i, j;
 
     teams[0] = (p->x == 0) ? 0 : p->map[getPos(p->y, p->x - 1)];
     teams[1] = (p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y, p->x + 1)];
     teams[2] = (p->y == 0) ? 0 : p->map[getPos(p->y - 1, p->x)];
     teams[3] = (p->y == HEIGHT - 1) ? 0 : p->map[getPos(p->y + 1, p->x)];
-
-    teams[4] = (p->y == 0 || p->x == 0) ? 0 : p->map[getPos(p->y - 1, p->x - 1)];
-    teams[5] = (p->y == 0 || p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y - 1, p->x + 1)];
-    teams[6] = (p->y == HEIGHT - 1 || p->x == 0) ? 0 : p->map[getPos(p->y + 1, p->x - 1)];
-    teams[7] = (p->y == HEIGHT - 1 || p->x == WIDTH - 1) ? 0 : p->map[getPos(p->y + 1, p->x + 1)];
+    teams[4] = (p->y == 0 || p->x == 0) ? 0 :
+    p->map[getPos(p->y - 1, p->x - 1)];
+    teams[5] = (p->y == 0 || p->x == WIDTH - 1) ? 0 :
+    p->map[getPos(p->y - 1, p->x + 1)];
+    teams[6] = (p->y == HEIGHT - 1 || p->x == 0) ? 0 :
+    p->map[getPos(p->y + 1, p->x - 1)];
+    teams[7] = (p->y == HEIGHT - 1 || p->x == WIDTH - 1) ? 0 :
+    p->map[getPos(p->y + 1, p->x + 1)];
     i = -1;
     while (++i < 8)
     {
         j = i;
         while (++j < 8)
-        {
             if (teams[i] != 0 && teams[j] != 0 &&
                 p->nteam != teams[i] && teams[i] == teams[j])
                 return (true);
-        }
     }
     return (false);
 }
 
-int         run(t_player *p)
+int	run(t_player *p)
 {
     int         winner;
     struct sembuf   sops;
@@ -59,7 +59,7 @@ int         run(t_player *p)
     return (winner);
 }
 
-void    end(void *map, int winner)
+void	end(void *map, int winner)
 {
     memset(map, 0, SIZE);
     while (winner == 0)
@@ -73,7 +73,7 @@ void    end(void *map, int winner)
 }
 
 
-int     main(int ac, char **av)
+int	main(int ac, char **av)
 {
     t_player    p;
     int         winner;
