@@ -4,12 +4,8 @@
 ** Made by	Adrien WERY
 ** Login	wery_a
 **
-** Started on	Sat Mar 19 12:42:51 2016 Adrien WERY
-<<<<<<< HEAD
-** Last update	Wed Mar 23 19:12:07 2016 Adrien WERY
-=======
-** Last update	Wed Mar 23 18:10:44 2016 Nicolas Constanty
->>>>>>> 68e30d8f02df08cf916c745952828ff8119294fd
+** Started on	Wed Mar 23 23:02:25 2016 Adrien WERY
+** Last update	Wed Mar 23 23:08:50 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -17,7 +13,7 @@
 void            run(t_player *p)
 {
     struct sembuf   sops;
-    t_msg   msg;
+    // t_msg   msg;
 
     sops.sem_num = 0;
     sops.sem_flg = 0;
@@ -29,10 +25,10 @@ void            run(t_player *p)
         usleep(SLEEP);
         sops.sem_op = 1;
         semop(p->semID, &sops, 1);
-        if (p->first && display(p->map) != -1)
-            break;
+        // if (p->first && display(p->map) != -1)
+        //     break;
     }
-    msgrcv(p->msgID, &msg, sizeof(t_msg), p->nteam, MSG_NOERROR | IPC_NOWAIT);
+    // msgrcv(p->msgID, &msg, sizeof(t_msg), p->nteam, MSG_NOERROR | IPC_NOWAIT);
     p->map[getPos(p->y, p->x)] = 0;
 }
 

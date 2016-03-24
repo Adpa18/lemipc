@@ -50,12 +50,13 @@ struct  s_case
   char          *map;
 };
 
-typedef     struct s_msg
+typedef         struct s_msg
 {
-    long    team;
-    char    pos;
+    long        team;
+    MoveType    mt;
+    // char    pos;
     // int     nb;
-}           t_msg;
+}               t_msg;
 
 void    my_putnbr(int nb);
 int     display(char *map);
@@ -64,7 +65,9 @@ void    movePos(t_player *p, int posTo);
 int     moveMsg(t_player *p);
 
 bool    isEnnemy(int ennemy, int team);
+bool    isFriend(int friend, int team);
 int     getPos(int y, int x);
+int     countTotal(char *map);
 int     count(t_player *p);
 bool    is_dead(t_player *p);
 bool    alone(t_player *p);

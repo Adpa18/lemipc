@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Wed Mar 23 17:19:57 2016 Adrien WERY
-** Last update	Wed Mar 23 18:54:43 2016 Adrien WERY
+** Last update	Wed Mar 23 23:02:16 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -15,6 +15,11 @@ inline int   getPos(int y, int x)
     if (y < 0 || y >= HEIGHT || x < 0 || x >= WIDTH)
         return (-1);
     return (y * WIDTH + x);
+}
+
+inline bool isFriend(int friend, int team)
+{
+    return (friend != 0 && friend != team);
 }
 
 inline bool isEnnemy(int ennemy, int team)
@@ -78,6 +83,21 @@ inline int  count(t_player *p)
      while (++i < WIDTH * HEIGHT)
      {
          if (p->map[i] == p->nteam)
+            ++nb;
+     }
+     return (nb);
+}
+
+inline int  countTotal(char *map)
+{
+    int     i;
+    int     nb;
+
+     i= -1;
+     nb = 0;
+     while (++i < WIDTH * HEIGHT)
+     {
+         if (map[i] != 0)
             ++nb;
      }
      return (nb);
