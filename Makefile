@@ -17,7 +17,7 @@ NAME	=	lemipc
 
 CFLAGS	=	-O2 -I./inc -I./
 
-CFLAGS	+=	-W -Wall -Werror -g
+CFLAGS	+=	-W -Wall -Werror
 
 $(NAME)	:	$(OBJ)
 		$(CC) -o $(NAME) $(OBJ)

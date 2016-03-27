@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Wed Mar 23 11:31:53 2016 Adrien WERY
-** Last update	Thu Mar 24 22:49:26 2016 Nicolas Constanty
+** Last update	Sun Mar 27 10:47:52 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -103,10 +103,8 @@ int	_moveMsg(t_player *p)
 
   msgS.mtype = p->nteam;
   msgS.pos = getPos(p->y, p->x);
-
-
-  if (msgrcv(p->msgID, &msgR, sizeof(t_msg), p->nteam, MSG_NOERROR |
-	     IPC_NOWAIT) == -1)
+  if (msgrcv(p->msgID, &msgR, sizeof(t_msg), p->nteam, MSG_NOERROR
+        | IPC_NOWAIT) == -1)
     {
       nb = count(p);
         while (--nb)

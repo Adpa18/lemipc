@@ -5,7 +5,7 @@
 ** Login	wery_a
 **
 ** Started on	Sat Mar 19 12:42:51 2016 Adrien WERY
-** Last update	Thu Mar 24 22:49:57 2016 Nicolas Constanty
+** Last update	Sun Mar 27 10:46:54 2016 Adrien WERY
 */
 
 #include "lemipc.h"
@@ -71,7 +71,6 @@ void	end(void *map, int winner)
     my_putnbr(winner);
     write(1, "\n", 1);
 }
-
 
 int	main(int ac, char **av)
 {
